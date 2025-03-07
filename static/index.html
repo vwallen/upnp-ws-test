@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UPnP Test</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        #log {
+            border: solid 1px black;
+            padding: 1em;
+        }
+    </style>
+    <script>
+        function logOut(msg) {
+            const out = document.getElementById("log")
+            out.innerText += msg + "\n"
+        }
+
+        function connect(url) {
+            const socket = new WebSocket(url)
+            socket.addEventListener("error", (event) => {
+              logOut(`Error connecting to ${url}`)
+            })
+            socket.addEventListener("open", (event) => {
+              logOut(`Connected to ${url}`)
+            })
+            return socket
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const socket = connect(`ws://${window.location.hostname}:${window.location.port}/ws`)
+            socket.addEventListener("message", (event) => {
+                logOut(event.data)
+            })
+        })
+    </script>
+</head>
+<body>
+    <h1>UPnP Test</h1>
+    <pre id="log"></pre>
+</body>
+</html>
