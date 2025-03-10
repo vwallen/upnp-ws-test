@@ -39,12 +39,13 @@ app = Starlette(routes=routes)
 
 if __name__ == '__main__':
 
-    port_local = 9000
-    port_external = port_local
-
     u = miniupnpc.UPnP(discoverdelay=200)
     u.discover()
     u.selectigd()
+
+    host_local = u.lanaddr # or '0.0.0.0'
+    port_local = 9000
+    port_external = port_local
 
     port_available = u.getspecificportmapping(port_external, 'TCP') is None
     while not port_available and port_external < 65536:
@@ -55,7 +56,7 @@ if __name__ == '__main__':
     logger.info(f"Added port mapping {u.getspecificportmapping(port_external, 'TCP')}")
 
     try:
-        config = uvicorn.Config(app, host='0.0.0.0', port=port_local)
+        config = uvicorn.Config(app, host=host_local, port=port_local)
         server = uvicorn.Server(config)
         server.run()
     except KeyboardInterrupt as err:
